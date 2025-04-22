@@ -19,16 +19,32 @@ export const getSellerOrders = async (req, res) => {
     sellerOrderControllerLogger.info(`Fetching orders for seller: ${req.account.id}`);
 
     const orders = await Order.find({
-      'items.seller': req.account.id
+      'items.seller': req.account.id 
     })
-      .populate('user', 'name email')
+      .populate('user', 'name email') 
       .sort('-createdAt');
 
     sellerOrderControllerLogger.info(`Fetched ${orders.length} orders for seller: ${req.account.id}`);
 
     res.json({
       success: true,
-      orders
+      message: 'Orders fetched successfully',
+      seller : req.account.name,
+      orders : orders.map(order => ({
+        orderId: order._id,
+        user: order.user.name,
+        items: order.items.map(item => ({
+          itemId: item._id,
+          productName: item.name,
+          itemImage: item.image,
+          quantity: item.quantity,
+          price: item.price,
+          status: item.status
+        })),
+        totalAmount: order.totalAmount,
+        status: order.status,
+        date: order.createdAt
+      }))
     });
 
   } catch (error) {

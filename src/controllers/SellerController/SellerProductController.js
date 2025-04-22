@@ -245,7 +245,10 @@ export const getSellerProducts = async (req, res) => {
     );
 
    // In getSellerProducts (SellerProductController.js)
-const products = await Product.find(filter).sort("-createdAt"); // Remove .populate()
+const products = await Product.find(filter)
+.sort("-createdAt")
+.populate("images") // Populate images if needed
+; // Remove .populate()
 
     sellerProductControllerLogger.info(
       `Fetched ${products.length} products for seller: ${req.account.id}`
@@ -254,8 +257,21 @@ const products = await Product.find(filter).sort("-createdAt"); // Remove .popul
     res.json({
       success: true,
       seller : req.account.name,
-      products,
+      totalProducts: products.length,
+
+      products: products.map((product) => ({
+        productId: product._id,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        stock: product.stock,
+        category: product.category.name,
+        subcategories: product.subcategories,
+        images: product.images,
+        isActive: product.isActive,
+      })),
     });
+    
   } catch (error) {
     sellerProductControllerLogger.error(
       `Get Products Error: ${error.message}`,

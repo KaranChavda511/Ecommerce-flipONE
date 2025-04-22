@@ -6,7 +6,8 @@ const orderItemSchema = new mongoose.Schema({
   name: String,
   price: Number,
   quantity: Number,
-  seller: { type: mongoose.Schema.Types.ObjectId, ref: 'Seller' }
+  seller: { type: mongoose.Schema.Types.ObjectId, ref: 'Seller' },
+  image : [String],
 });
 
 const orderSchema = new mongoose.Schema({

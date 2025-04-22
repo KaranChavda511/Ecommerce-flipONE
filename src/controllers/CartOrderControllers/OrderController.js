@@ -19,7 +19,7 @@ const processOrder = async (userId, shippingAddress) => {
     const cart = await Cart.findOne({ user: userId })
       .populate({
         path: 'items.product',
-        select: 'name price stock isActive seller',
+        select: 'name price stock isActive seller images',
         match: { isActive: true }
       });
 
@@ -41,7 +41,7 @@ const processOrder = async (userId, shippingAddress) => {
         price: product.price,
         quantity: item.quantity,
         seller: product.seller,
-        image: product.images?.[0] || null
+        image: product.images || [],
       });
 
       acc[1].push({
@@ -82,13 +82,15 @@ export const createOrder = async (req, res) => {
     res.status(201).json({
       success: true,
       order: {
-        id: order._id,
+        OrderId: order._id,
         totalAmount: order.totalAmount,
         status: order.status,
         items: order.items.map(item => ({
           name: item.name,
           quantity: item.quantity,
-          price: item.price
+          price: item.price,
+          image: item.image,
+          seller: item.seller,
         }))
       }
     });
@@ -112,7 +114,13 @@ export const getOrderHistory = async (req, res) => {
     res.json({
       success: true,
       orders: orders.map(order => ({
-        id: order._id,
+        orderId: order._id,
+        products: order.items.map(item => ({
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          image: item.image
+        })),
         totalAmount: order.totalAmount,
         status: order.status,
         date: order.createdAt

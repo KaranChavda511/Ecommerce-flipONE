@@ -7,6 +7,8 @@ import {
   getUserProfile,
   updateProfile,
   updateprofilePic,
+  likeProduct,
+  getLikedProducts
 } from '../../controllers/UserControllers/UserController.js';
 import { errorHandler } from '../../middlewares/ErrorMiddleware.js';
 import { profileImageUpload } from '../../utils/FileUploads.js';
@@ -40,6 +42,9 @@ router.patch('/profile/picture',
   profileImageUpload,
   updateprofilePic
 );
+
+router.post('/is-liked/:productId', protect, userProtect, likeProduct);
+router.get('/likes', protect, userProtect, getLikedProducts);
 
 
 // Global error handler (must be the last middleware)

@@ -11,8 +11,12 @@ const userSchema = mongoose.Schema(
     mobile: {type: String},
     profilePic: { type: String },
     isActive: { type: Boolean, default: true },
-    // isDisabled: { type: Boolean, default: false }
-    role: { type: String,enum: ['user'], default: 'user' }
+    // isDisabled: { type: Boolean, default: false },
+    role: { type: String,enum: ['user'], default: 'user' },
+    likedProducts: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product'
+    }]
   },
   { timestamps: true }
 );

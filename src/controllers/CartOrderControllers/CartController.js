@@ -49,9 +49,9 @@ export const getCart = async (req, res) => {
         const available = product?.isActive ? Math.min(item.quantity, product.stock) : 0;
         
         return {
-          id: item._id,
+          ItemId: item._id,
           product: {
-            id: product._id,
+            ProductId: product._id,
             name: product.name,
             price: product.price,
             images: product.images,
@@ -129,7 +129,7 @@ export const addToCart = async (req, res) => {
     }
 
     const product = await Product.findOne({
-      _id: productId,
+      ProductID: productId,
       isActive: true
     });
 
@@ -171,6 +171,7 @@ export const addToCart = async (req, res) => {
       data: {
         cartItemId: existingItem?._id || cart.items[cart.items.length - 1]._id,
         productId,
+        images: product.images,  // new line
         quantity: existingItem?.quantity || quantity
       },
       // links: {

@@ -4,6 +4,7 @@
 
 
 import User from '../../models/User.js';
+import Product from '../../models/Product.js';
 import generateToken from '../../utils/generateToken.js';
 import fs from 'fs/promises';
 import path from 'path';
@@ -254,6 +255,65 @@ export const updateprofilePic = async (req, res) => {
       success: false,
       message: 'Server error updating profile picture',
       error: error.message 
+    });
+  }
+};
+
+
+// Like or Unlike a Product
+export const likeProduct = async (req, res) => {
+  try {
+    const userId = req.account.id;
+    const { productId } = req.params;
+
+    const user = await User.findById(userId);
+    const index = user.likedProducts.indexOf(productId);
+
+    let action;
+
+    if (index === -1) {
+      user.likedProducts.push(productId);
+      action = 'liked';
+    } else {
+      user.likedProducts.splice(index, 1);
+      action = 'unliked';
+    }
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: `Product ${action} successfully`
+    });
+
+  } catch (error) {
+    console.error('Like product error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to like/unlike product'
+    });
+  }
+};
+
+// Get All Liked Products
+export const getLikedProducts = async (req, res) => {
+  try {
+    const user = await User.findById(req.account.id)
+      .populate({
+        path: 'likedProducts',
+        populate: { path: 'seller', select: 'name' }
+      });
+
+    res.status(200).json({
+      success: true,
+      products: user.likedProducts
+    });
+
+  } catch (error) {
+    console.error('Fetch liked products error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch liked products'
     });
   }
 };

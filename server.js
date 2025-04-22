@@ -1,6 +1,7 @@
 import express from 'express';
 import path from 'path';
 import dotenv from "dotenv";
+import cors from "cors";
 import morgan from 'morgan';
 import connectDB from './src/config/db.js';
 import centralizedRoute from './src/routes/CentralizedRoute.js';
@@ -24,6 +25,14 @@ app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
+
+const corsOptions = {
+  // origin: ["http://localhost:5173"],
+  origin: "*", // Change this in production
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
+};
+app.use(cors(corsOptions));
 
 // Add before routes
 app.use((req, res, next) => {
